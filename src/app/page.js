@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardBody, CardFooter, Image } from "@heroui/react";
+import Link from "next/link";
 
 export default function Home() {
   const [data, setData] = useState([]);
@@ -22,13 +23,19 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="grid grid-col-2 sm:grid-cols-5 lg:grid-col-8 gap-6">
+      <div className="grid grid-col-2 sm:grid-cols-5 lg:grid-col-7 gap-6">
         {data.map((product, index) => (
-          <Card key={index} isPressable shadow="sm" className="group">
-            <CardBody className="overflow-visible p-0">
+          <Card
+            as={Link}
+            key={index}
+            isPressable
+            shadow="sm"
+            href={`/${product.id}`}
+          >
+            <CardBody className="overflow-hidden p-0 ">
               <Image
                 alt={"bla bla "}
-                className="w-full transition duration-300 object-contain h-[350px] group-hover:scale-125 "
+                className="w-full transition duration-300 object-contain h-[350px] overflow-hidden"
                 radius="lg"
                 shadow="sm"
                 src={product.image}
