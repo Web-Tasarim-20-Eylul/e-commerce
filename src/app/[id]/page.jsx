@@ -1,83 +1,92 @@
 import Image from "next/image";
+import { notFound } from "next/navigation";
+import AddToCartButton from "@/components/add-to-cart-button";
+import FavoriteButton from "@/components/favorite-button";
+import ProductFeatures from "@/components/product-features";
+
+async function getProduct(id) {
+  try {
+    const res = await fetch(`https://fakestoreapi.com/products/${id}`, {
+      next: { revalidate: 3600 }, // ISR: 1 saat cache
+    });
+
+    if (!res.ok) {
+      return null;
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error("Product fetch error:", error);
+    return null;
+  }
+}
 
 export default async function ProductDetailPage({ params }) {
   const { id } = await params;
-
-  const product = await fetch(`https://fakestoreapi.com/products/${id}`).then(
-    (res) => res.json()
-  );
-
+  const product = await getProduct(id);
+  if (!product) {
+    notFound();
+  }
   return (
-    <div className="container mx-auto flex flex-col lg:flex-row gap-8 p-8">
-      {/* RESİM */}
-      <div className="relative h-[60vh] w-full lg:w-[35%]">
-        <Image
-          src={product.image}
-          fill
-          className="object-contain"
-          alt={product.title}
-        />
-      </div>
-
-      {/* SAĞDAKİ ÜRÜN BİLGİLERİ */}
-      <div className="flex flex-col w-full justify-between">
-        {/* Ürün bilgileri ve yıldız (Üst kısım) */}
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col-reverse justify-between lg:flex-row">
-            <h1 className="text-3xl">{product.title}</h1>
-            <div className="flex items-center">
-              <svg
-                className="w-5 h-5 text-fg-yellow"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="#e3bc0e"
-                viewBox="0 0 24 24"
-              >
-                <path d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-              </svg>
-              <p className="ms-2 text-sm font-bold text-heading">
-                {product.rating.rate}
-              </p>
-              <span className="w-1 h-1 mx-1.5 bg-neutral-quaternary rounded-full"></span>
-              <a
-                href="#"
-                className="text-sm font-medium text-heading underline hover:no-underline"
-              >
-                {product.rating.count} reviews
-              </a>
-            </div>
-          </div>
-          <p className="text-gray-600 max-w-2xl">{product.description}</p>
-          <div className="p-1 bg-green-200 color-primary w-fit rounded-sm text-sm">
-            {product.category}
-          </div>
-          <div className="flex gap-3">
-            <span className="font-bold text-white border bg-black p-2 hover:bg-white hover:text-black cursor-pointer">
-              S
-            </span>
-            <span className="font-bold text-white border bg-black p-2 hover:bg-white hover:text-black cursor-pointer">
-              M
-            </span>
-            <span className="font-bold text-white border bg-black p-2 hover:bg-white hover:text-black cursor-pointer">
-              L
-            </span>
-            <span className="font-bold text-white border bg-black p-2 hover:bg-white hover:text-black cursor-pointer">
-              XL
-            </span>
-          </div>
-          <h2 className="text-3xl font-bold">{product.price}$</h2>
+    <div className="container mx-auto p-6 min-h-screen bg-background">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+        {/* ÜRÜN GÖRSELI */}
+        <div className="relative h-[400px] md:h-[500px] lg:h-[600px] bg-background/60 dark:bg-default-100/50 rounded-lg p-8">
+          <Image
+            src={product.image}
+            fill
+            className="object-contain"
+            alt={product.title}
+            priority
+          />
         </div>
 
-        {/* Butonlar */}
-        <div className="flex justify-end gap-4">
-          <button className="py-4 px-8 bg-primary text-white font-bold cursor-pointer">
-            Hemen Al
-          </button>
-          <button className="py-4 px-8 border border-primary bg-white hover:bg-primary hover:text-white text-black font-bold cursor-pointer ">
-            Sepete Ekle
-          </button>
+        {/* ÜRÜN BİLGİLERİ */}
+        <div className="flex flex-col gap-6">
+          {/* Başlık ve Rating */}
+          <div className="space-y-3">
+            <span className="inline-block px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium capitalize">
+              {product.category}
+            </span>
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground dark:text-foreground">
+              {product.title}
+            </h1>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                <span className="text-yellow-500 text-xl">⭐</span>
+                <span className="font-semibold text-foreground">
+                  {product.rating.rate}
+                </span>
+              </div>
+              <span className="w-1 h-1 bg-default-400 rounded-full"></span>
+              <span className="text-sm text-default-500">
+                {product.rating.count} değerlendirme
+              </span>
+            </div>
+          </div>
+          {/* Fiyat */}
+          <div className="py-4 border-y border-default-200 dark:border-default-100">
+            <p className="text-4xl font-bold text-primary">${product.price}</p>
+            <p className="text-sm text-default-500 mt-1">KDV dahil</p>
+          </div>
+          {/* Açıklama */}
+          <div>
+            <h3 className="text-lg font-semibold mb-2 text-foreground">
+              Ürün Açıklaması
+            </h3>
+            <p className="text-default-600 dark:text-default-400 leading-relaxed">
+              {product.description}
+            </p>
+          </div>{" "}
+          {/* Butonlar */}{" "}
+          <div className="flex gap-3 mt-auto">
+            <div className="flex-1">
+              <AddToCartButton product={product} size="lg" fullWidth showIcon />
+            </div>
+            <FavoriteButton product={product} size="lg" absolute={false} />
+          </div>
+          {/* Özellikler */}
+          <ProductFeatures />
         </div>
       </div>
     </div>

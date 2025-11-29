@@ -1,14 +1,30 @@
 @import "tailwindcss";
 
 @plugin '../hero.ts';
-/* Note: You may need to change the path to fit your project structure */
 @source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
 @custom-variant dark (&:is(.dark *));
 
+/* ========================================
+   THEME VARIABLES
+   ======================================== */
+
+/* Light Theme (Default) */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-  --primary: #184518;
+  --foreground: #0a0a0a;
+  --primary: #22c55e;
+  --primary-foreground: #ffffff;
+}
+
+/* Dark Theme - STRONG SELECTORS */
+html.dark,
+.dark,
+html.dark *,
+body.dark {
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --primary: #22c55e;
+  --primary-foreground: #0a0a0a;
 }
 
 @theme inline {
@@ -19,16 +35,86 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --primary: #184518;
-  }
+/* ========================================
+   BASE STYLES
+   ======================================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* ========================================
+   THEME OVERRIDES (FORCED)
+   ======================================== */
+
+/* Light Mode - Force white background */
+html:not(.dark) {
+  background-color: #ffffff !important;
+}
+
+html:not(.dark) body {
+  background-color: #ffffff !important;
+  color: #0a0a0a !important;
+}
+
+/* Dark Mode - Force black background */
+html.dark {
+  background-color: #0a0a0a !important;
+}
+
+html.dark body {
+  background-color: #0a0a0a !important;
+  color: #fafafa !important;
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #888 transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Dark mode scrollbar */
+html.dark *::-webkit-scrollbar-thumb {
+  background: #404040;
+}
+
+html.dark *::-webkit-scrollbar-thumb:hover {
+  background: #737373;
 }

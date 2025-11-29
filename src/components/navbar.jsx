@@ -8,109 +8,85 @@ import {
   NavbarContent,
   NavbarItem,
   Link,
-  Button,
-  Badge,
 } from "@heroui/react";
-import { ShoppingBasket } from "lucide-react";
-import Image from "next/image";
-
-export const AcmeLogo = () => {
-  return (
-    <Link href="/" className="relative h-[47px] w-[144px] flex">
-      <Image src={"/logo.svg"} fill className="object-contain" alt="logo" />
-    </Link>
-  );
-};
+import NextLink from "next/link";
+import CartBadge from "./cart-badge";
+import SearchInput from "./search-input";
+import ThemeToggle from "./theme-toggle";
+import Logo from "./logo";
+import { Home, Tag, Sparkles, Heart } from "lucide-react";
 
 export default function Navbar() {
   const menuItems = [
-    "Profile",
-    "Dashboard",
-    "Activity",
-    "Analytics",
-    "System",
-    "Deployments",
-    "My Settings",
-    "Team Settings",
-    "Help & Feedback",
-    "Log Out",
+    { label: "Ana Sayfa", href: "/", icon: Home },
+    { label: "Favoriler", href: "/favoriler", icon: Heart },
+    { label: "Kampanyalar", href: "/#deals", icon: Sparkles },
   ];
 
   return (
-    <HeroUINavbar disableAnimation isBordered>
-      <NavbarContent className="sm:hidden" justify="start">
+    <HeroUINavbar
+      maxWidth="xl"
+      isBordered
+      className="bg-background/70 backdrop-blur-md"
+    >
+      {/* Mobile Menu Toggle */}
+      <NavbarContent className="md:hidden" justify="start">
         <NavbarMenuToggle />
-      </NavbarContent>
-
-      <NavbarContent className="sm:hidden pr-3" justify="center">
-        <NavbarBrand>
-          <AcmeLogo />
+      </NavbarContent>{" "}
+      {/* Mobile Logo (Center) */}
+      <NavbarContent className="md:hidden pr-3" justify="center">
+        <NavbarBrand as={NextLink} href="/">
+          <Logo size="small" />
         </NavbarBrand>
       </NavbarContent>
-
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        <NavbarBrand>
-          <AcmeLogo />
+      {/* Desktop Logo (Left) */}
+      <NavbarContent className="hidden md:flex" justify="start">
+        <NavbarBrand as={NextLink} href="/">
+          <Logo />
         </NavbarBrand>
-        <NavbarItem>
-          <Link color="foreground" href="/erkek">
-            Erkek
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="/kadin">
-            Kadın
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="/taki">
-            Takı
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="/elektronik">
-            Elektronik
-          </Link>
-        </NavbarItem>
       </NavbarContent>
-
-      <NavbarContent justify="end">
-        <NavbarItem>
-          <Button
-            as={Link}
-            color="primary"
-            className="text-primary"
-            href="#"
-            variant="flat"
-          >
-            Sign Up
-          </Button>
-        </NavbarItem>
-        <NavbarItem>
-          <Badge content={12} color="danger">
-            <Button as={Link} isIconOnly href="/sepet">
-              <ShoppingBasket />
-            </Button>
-          </Badge>
-        </NavbarItem>
-      </NavbarContent>
-
-      <NavbarMenu>
-        {menuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item}-${index}`}>
+      {/* Desktop Navigation Links */}
+      <NavbarContent className="hidden md:flex gap-6" justify="center">
+        {menuItems.map((item) => (
+          <NavbarItem key={item.href}>
             <Link
-              className="w-full"
-              color={
-                index === 2
-                  ? "warning"
-                  : index === menuItems.length - 1
-                  ? "danger"
-                  : "foreground"
-              }
-              href="#"
+              as={NextLink}
+              href={item.href}
+              color="foreground"
+              className="flex items-center gap-2 hover:text-primary transition-colors"
+            >
+              <item.icon className="w-4 h-4" />
+              <span>{item.label}</span>
+            </Link>
+          </NavbarItem>
+        ))}
+      </NavbarContent>
+      {/* Search Bar (Desktop & Tablet) */}
+      <NavbarContent className="hidden md:flex flex-1 px-4" justify="end">
+        <SearchInput className="max-w-sm" />
+      </NavbarContent>
+      {/* Actions (Theme + Cart) */}
+      <NavbarContent justify="end" className="gap-2">
+        <NavbarItem>
+          <ThemeToggle />
+        </NavbarItem>
+        <NavbarItem>
+          <CartBadge />
+        </NavbarItem>
+      </NavbarContent>
+      {/* Mobile Menu */}
+      <NavbarMenu className="pt-6 bg-background/95 backdrop-blur-md">
+        {menuItems.map((item) => (
+          <NavbarMenuItem key={item.href}>
+            <Link
+              as={NextLink}
+              href={item.href}
+              className="w-full flex items-center gap-3 py-2"
+              color="foreground"
               size="lg"
             >
-              {item}
+              <item.icon className="w-5 h-5" />
+              <span>{item.label}</span>
             </Link>
           </NavbarMenuItem>
         ))}
